@@ -7,7 +7,7 @@ from classes.product import Product
 class Receiver(Product):
     
     def __init__(self, name: str, price: float, num_channels :int, color :str, size :str):
-        super.__init__(name, price)
+        super().__init__(name, price)
         self.num_channels = num_channels
         self.color = color
         self.size = size

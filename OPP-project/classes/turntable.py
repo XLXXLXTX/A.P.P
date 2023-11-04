@@ -6,7 +6,7 @@ from classes.product import Product
 
 class Turntable(Product):
 
-    def __init__(self, name, price, speed, connection_type, size):
+    def __init__(self, name :str, price :float, speed :float, connection_type :str, size :str):
         super().__init__(name, price)
         self.speed = speed
         if connection_type in ['wired', 'bluetooth']:
