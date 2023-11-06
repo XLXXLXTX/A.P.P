@@ -1,3 +1,20 @@
+# impor from classes folder each file
+#from classes.category import Category
+#from classes.categories import Categories
+#from classes.products import Products
+from classes.product import Product
+from classes.amplifier import Amplifier
+#from classes.orders import Orders
+from classes.receiver import Receiver
+from classes.turntable import Turntable
+
+#---------------------------------------------
+# DEBUG
+#---------------------------------------------
+# import sys to use sys.argv 
+import sys
+from test import test_main
+#---------------------------------------------
 
 #---------------------------------------------
 # Logic functs
@@ -74,4 +91,7 @@ def main():
 # Check if runnig as a script, not as a module
 #---------------------------------------------
 if __name__ == '__main__':
-    main()
+    if sys.argv[1] == 'test':
+        test_main()
+    else:
+        main()
