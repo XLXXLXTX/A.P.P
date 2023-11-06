@@ -2,15 +2,24 @@
 Category - describes a single category
 """
 
-from json import JSONEncoder, JSONDecodeError, loads, dump
+from json import JSONEncoder, JSONDecoder, JSONDecodeError, loads, dump
+#from .category import Category
 
 class CategoryEncoder(JSONEncoder):
-    # TODO
+    # Transform the Python object into a json representation
+    def default(self, o :str) -> str:
+        return o.__dict__
     pass
 
-class CategoryDecoder(JSONEncoder):
-    # TODO
-    pass
+class CategoryDecoder(JSONDecoder):
+    # Transform the json representation into a Python object
+    def decode(self, o :str):
+        data = loads(o)
+        vals = []
+        for key in data.keys():
+            vals.append(data[key])
+        cat = Category(*vals)
+        return cat
 
 class Category:
     """ Definition of the Category class and its attributes/methods """  
@@ -27,4 +36,8 @@ class Category:
 
     def __hash__(self):
         return hash(self.name)
+    
+    def get_details(self) -> str:
+        """ Returns a string with the details of the category """
+        return f"Category: {self.name}"
 
