@@ -11,6 +11,7 @@ class Product(ABC):
 
     # Define constructor with the base info common to all the prodcts
     def __init__(self, name :str, price :float):
+        self._type = type(self).__name__ # Obtain name of the class, for child purpose
         self.name = name
         self.price = price
 
