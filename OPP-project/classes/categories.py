@@ -9,8 +9,6 @@ from classes.category import Category, CategoryDecoder, CategoryEncoder
 class CategoriesEncoder(JSONEncoder):
     """ From Python object to json representation """
 
-    #POSSIBLE ERROR: el devolver un diccionario, no se si es correcto, 
-    # por lo que no pongo el tipo de retorno
     def default(self, o :Category):
         return o.__dict__
 
