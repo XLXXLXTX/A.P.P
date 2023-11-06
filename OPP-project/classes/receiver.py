@@ -3,6 +3,23 @@ Receiver  -  inherits  the  Products  class  and  contains  info  specific  for 
 channels, color, size)
 """
 from classes.product import Product
+from json import JSONEncoder, JSONDecoder, loads, dump
+
+class ReceiverEncoder(JSONEncoder):
+        
+    def default(self, o :str):
+        return o.__dict__
+
+class ReceiverDecoder(JSONDecoder):
+    
+    def decode(self, o :str):
+        data = loads(o)
+        vals = []
+        for key in data.keys():
+            print(f'Key: {key}')
+            vals.append(data[key])
+        rec = Receiver(*vals)
+        return rec
 
 class Receiver(Product):
     
