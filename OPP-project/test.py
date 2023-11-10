@@ -107,9 +107,8 @@ def test_all_products(receivers: List[Receiver], turntables: List[Turntable], am
 def test_encoder(lista :List[Product]) -> None:
     print('\ntest_encoder() ...')
 
-
-    #for p in lista:
-    #    Products.add_product(p)
+    for p in lista:
+        Products.add_product(p)
     
     Products.list_products()
 
