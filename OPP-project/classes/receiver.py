@@ -16,7 +16,7 @@ class ReceiverDecoder(JSONDecoder):
         data = loads(o)
         vals = []
         for key in data.keys():
-            print(f'Key: {key}')
+            #print(f'Key: {key}')
             vals.append(data[key])
         rec = Receiver(*vals)
         return rec

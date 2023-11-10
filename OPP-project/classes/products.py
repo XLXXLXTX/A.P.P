@@ -10,18 +10,52 @@ from classes.amplifier import Amplifier, AmplifierEncoder, AmplifierDecoder
 from classes.receiver import Receiver, ReceiverEncoder, ReceiverDecoder
 from classes.turntable import Turntable, TurntableEncoder, TurntableDecoder
 
-from typing import List
+from typing import Dict, List, Tuple
 
 class ProductsEncoder(JSONEncoder):
 
     def default(self, o :Product):
         return o.__dict__
     
-
 class Products:
     """ Holds a list with all the products in the store """
 
     products = []
+    
+    @classmethod
+    def _get_product_type(cls, data: str) -> Tuple[str, str]:
+        # Buscar la posición de "_type"
+        type_index = data.find('"_type":')
+
+        # Verificar si "_type" está presente en la cadena
+        if type_index == -1:
+            raise ValueError("'_type' not found in the dictionary.")
+
+        # Extraer la parte del string que contiene "_type" y el valor
+        type_and_rest = data[type_index:]
+
+        # Split the string into two parts using the commas as separators
+        parts = type_and_rest.split(',')
+
+        # Obtain the product type
+        product_type = parts[0].split(':')[1].strip(' "')
+
+        # Define dict with the values to create the product (amplifier, receiver, turntable ...)
+        product_data = {}
+
+        for part in parts[1:]:
+            key, value = part.split(':', 1)  # Limitamos a una sola división para manejar valores con comas
+            key = key.strip(' "') # Delete spaces and quotes
+            value = value.strip(' "') # Delete spaces and quotes
+            value = value.rstrip(' "}') # Delete spaces, quotes and closing curly bracket
+            product_data[key] = value #Add key and value to the dict
+
+
+        product_data = str(product_data).replace("'", '"')
+
+        # Return the product type and the product data
+        return product_type, product_data
+
 
     @classmethod
     def load_products(cls) -> List[Product]:
@@ -37,62 +71,47 @@ class Products:
         try:
             with open("products.txt") as f:
                 for line in f:
-                    data = json.loads(line)
+                    data = loads(line)
 
-                    print(f'Loading product {data}')
+                    #print(f'Loading product {data}')
 
-                    # not working:
-                    """                    
-                    if not isinstance(data, dict):
-                        print(f'Error: {data} is not a dictionary')
-                        continue
-                    else:
-                        print(f'Type: {data["_type"]}')
-                        
-                    """
-
-                    # Buscar la posición de "_type"
-                    type_index = data.find('"_type":')
-
-                    # Extraer la parte del string que contiene "_type" y el valor
-                    type_and_rest = data[type_index:]
-
-                    # Dividir la cadena en dos partes utilizando las comas como separadores
-                    parts = type_and_rest.split(',')
-
-                    # Obtener el valor de "_type"
-                    product_type = parts[0].split(':')[1].strip(' "')
-
-                    product_data = {}
-                    for part in parts[1:]:
-                        key, value = part.split(':')
-                        key = key.strip(' "')
-                        value = value.strip(' "')
-                        product_data[key] = value
-
-
-                    #print(f'Product type: {product_type}')
-                    #print(f'Product data: {product_data}')
-                    
-                    # -----------------
-                    # TODO: NOT WORKING 
+                    pt, pd = cls._get_product_type(str(data))
 
                     print('Decoding product...')
+                    decoded_product = None
 
-                    decoded_product = rd.decode(str(product_data))
-                    print(f'Decoded product: {decoded_product.get_details()}')
+                    if pt == 'Receiver':
+                        print(f'   Decoding receiver...: {str(pd)}')
+                        decoded_product = rd.decode(str(pd))
+                        print(f'   Decoded product: {decoded_product.get_details()}')
+
+                    elif pt == 'Turntable':
+                        print(f'   Decoding turntable...: {str(pd)}')
+                        decoded_product = td.decode(str(pd))
+                        print(f'Decoded product: {decoded_product.get_details()}')
+
+                    elif pt == 'Amplifier':
+                        print(f'   Decoding amplifier...: {str(pd)}')
+                        decoded_product = ad.decode(str(pd))
+                        print(f'Decoded product: {decoded_product.get_details()}')
+
+                    else:
+                        print(f'ERROR Decoding product: Unknown product type {pt}')
                     
+                    print(f'      Decoded product: {decoded_product.get_details()}')
+
                     if decoded_product not in cls.products:
-                        print(f'Adding product {decoded_product}')
+                        print(f'Adding product {decoded_product} | 👌 Conteo: {len(cls.products)} ')
                         cls.products.append(decoded_product)
-        
-                    #if not isinstance(data, dict):
-                    #    print(f'Error: {data} is not a dictionary')
-                    
-                    # TODO: NOT WORKING
-                    # -----------------
                     
         except (JSONDecodeError, FileNotFoundError) as e:
+            if isinstance(e, JSONDecodeError):
+                print(f'ERROR: {e}')
+            elif isinstance(e, FileNotFoundError):
+                print(f'ERROR: {e}')
+            else:
+                print(f'ERROR: {e}')
+            
             cls.products = []
 
         return cls.products
@@ -114,9 +133,8 @@ class Products:
         te = TurntableEncoder()
         ae = AmplifierEncoder()
 
-        #cls.load_products()
+        #cls.products = cls.load_products()
         
-
         if prod not in cls.products:
 
             if not isinstance(prod, Product):
@@ -157,10 +175,11 @@ class Products:
         First we read the file products.txt and we deserialize the collection
         of products. Then we iterate the collection and we print each product
         """
-        cls.load_products()
+        cls.products = cls.load_products()
 
-        print(f'Products: {cls.products}')
+        #print(f'Products: {cls.products}')
+
+        print(f'***Lista Products: {len(cls.products)}')
+
         for p in cls.products:
-            print(f'--->{p.get_details()}')
-
-        pass
+            print(f'✅---> 💨Type: {type(p)} 👀 {p.get_details()}')
