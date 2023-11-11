@@ -81,36 +81,37 @@ class Products:
                 for line in f:
                     data = loads(line)
 
-                    #print(f'Loading product {data}')
+                    logging.debug(f'Loading product {data}')
 
                     pt, pd = cls._get_product_type(str(data))
 
-                    print('Decoding product...')
+                    logging.debug('Decoding product...')
                     decoded_product = None
 
                     if pt == 'Receiver':
-                        print(f'   Decoding receiver...: {str(pd)}')
+                        logging.debug(f'   Decoding receiver...: {str(pd)}')
                         decoded_product = rd.decode(str(pd))
-                        print(f'   Decoded product: {decoded_product.get_details()}')
+                        logging.debug(f'   Decoded product: {decoded_product.get_details()}')
 
                     elif pt == 'Turntable':
-                        print(f'   Decoding turntable...: {str(pd)}')
+                        logging.debug(f'   Decoding turntable...: {str(pd)}')
                         decoded_product = td.decode(str(pd))
-                        print(f'Decoded product: {decoded_product.get_details()}')
+                        logging.debug(f'Decoded product: {decoded_product.get_details()}')
 
                     elif pt == 'Amplifier':
-                        print(f'   Decoding amplifier...: {str(pd)}')
+                        logging.debug(f'   Decoding amplifier...: {str(pd)}')
                         decoded_product = ad.decode(str(pd))
-                        print(f'Decoded product: {decoded_product.get_details()}')
+                        logging.debug(f'Decoded product: {decoded_product.get_details()}')
 
                     else:
                         print(f'ERROR Decoding product: Unknown product type {pt}')
                     
-                    print(f'      Decoded product: {decoded_product.get_details()}')
+                    logging.debug(f'      Decoded product: {decoded_product.get_details()}')
 
+                    #TODO: not working properly: product is always added, even when the list already contains a product with same details ??? (check it)
                     if decoded_product not in cls.products:
-                        print(f'Adding product {decoded_product} | 👌 Conteo: {len(cls.products)} ')
                         cls.products.append(decoded_product)
+                        logging.debug(f'Adding product {decoded_product} | 👌 Conteo: {len(cls.products)} ')
                     
         except (JSONDecodeError, FileNotFoundError) as e:
             if isinstance(e, JSONDecodeError):
@@ -119,13 +120,13 @@ class Products:
                 print(f'ERROR: {e}')
             else:
                 print(f'ERROR: {e}')
-            
+                
             cls.products = []
 
         return cls.products
     
     @classmethod
-    def add_product(cls, prod :Product) -> None:
+    def add_product(cls, prod :Product) -> bool:
         logging.debug(f'Products.add_product(prod : {prod.get_details}) ...')
 
         """
@@ -153,13 +154,13 @@ class Products:
                 ep = None
 
                 if isinstance(prod, Receiver):
-                    print(f'Adding receiver {prod.get_details()}')
+                    logging.debug(f'Adding receiver {prod.get_details()}')
                     ep = re.encode(prod)
                 elif isinstance(prod, Turntable):
-                    print(f'Adding turntable {prod.get_details()}')
+                    logging.debug(f'Adding turntable {prod.get_details()}')
                     ep = te.encode(prod)
                 elif isinstance(prod, Amplifier):
-                    print(f'Adding amplifier {prod.get_details()}')
+                    logging.debug(f'Adding amplifier {prod.get_details()}')
                     ep = ae.encode(prod)
                 else:
                     raise ValueError('Product must be an instance of Product class')
@@ -167,10 +168,14 @@ class Products:
                 with open("products.txt", 'a') as f:
                     dump(ep, f)
                     f.write("\n")
+                
+                return True
+        
+        return False
 
 
     @classmethod
-    def remove_product(cls, prod :Product) -> None:
+    def remove_product(cls, prod :Product) -> bool:
         logging.debug(f'Products.remove_product(prod : {prod.get_details}) ...')
 
         """
@@ -191,10 +196,7 @@ class Products:
         """
         cls.products = cls.load_products()
 
-        #print(f'Products: {cls.products}')
-
-        #print(f'***Lista Products: {len(cls.products)}')
-
         for p in cls.products:
-            #print(f'✅---> 💨Type: {type(p)} 👀 {p.get_details()}')
-            print(p.get_details())
+            print(f'\t-{p.get_details()}')
+
+        print(f'\n')

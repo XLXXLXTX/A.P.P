@@ -1,7 +1,7 @@
 # impor from classes folder each file
 from classes.category import Category
 from classes.categories import Categories
-#from classes.products import Products
+from classes.products import Products
 from classes.product import Product
 from classes.amplifier import Amplifier
 #from classes.orders import Orders
@@ -67,14 +67,68 @@ def displayCategories():
 
     Categories.list_categories()
 
+#---------------------------------------------
+
 def addProduct():
     logging.debug(f'addProduct() ...')
+
+    types_of_products = {1 : Amplifier, 2 : Receiver, 3 : Turntable}
+    
+    for t in types_of_products:
+        print(f'\t{t}) {types_of_products[t].__name__}')
+    
+    p = int(input(f'\n\tType the number of the product to: '))
+    
+    if p not in types_of_products:
+        print(f'\t\tProduct not found!')
+        return
+    else:
+        
+        #Ask for details of the product
+        info = {"name" : "", "price" : 0}
+        product = None
+
+        # Ask for comon info of the product
+        info["name"] = input(f'\t\tType the name of the new {types_of_products[p].__name__}: ')
+        info["price"] = float(input(f'\t\tType the price of the new {types_of_products[p].__name__}: '))
+
+        # Ask for specific info of the product
+        if types_of_products[p].__name__ == Amplifier.__name__:
+
+            info["power"] = int(input(f'\t\tType the power of the new {types_of_products[p].__name__}: '))
+            info["num_channels"] = int(input(f'\t\tType the number of channels of the new {types_of_products[p].__name__}: '))
+            info["size"] = input(f'\t\tType the size of the new {types_of_products[p].__name__}: ')
+
+        elif types_of_products[p].__name__ == Receiver.__name__:
+
+            info["num_channels"] = int(input(f'\t\tType the number of channels of the new {types_of_products[p].__name__}: '))
+            info["color"] = input(f'\t\tType the color of the new {types_of_products[p].__name__}: ')
+            info["size"] = input(f'\t\tType the size of the new {types_of_products[p].__name__}: ')
+
+        elif types_of_products[p].__name__ == Turntable.__name__:
+
+            info["speed"] = float(input(f'\t\tType the speed of the new {types_of_products[p].__name__}: '))
+            info["connection_type"] = input(f'\t\tType the connection type (wired or bluetooth) of the new {types_of_products[p].__name__}: ')
+            info["size"] = input(f'\t\tType the size of the new {types_of_products[p].__name__}: ')
+
+        #Create the product
+        product = types_of_products[p](**info)
+
+        # Add the product to the list of products
+        if Products.add_product(product):
+            print(f'\n\t\tProduct added successfully!')
+        else:
+            print(f'\n\t\tProduct already exists!')
+        
+        #TODO: not working properly: add_product() returns always True ??? (check it)
 
 def removeProduct():
     logging.debug(f'removeProduct() ...')
 
 def displayProducts():
     logging.debug(f'displayProducts() ...')
+
+    Products.list_products()
 
 def placeOrder():
     logging.debug(f'placeOrder() ...')
@@ -146,5 +200,5 @@ if __name__ == '__main__':
     if len(sys.argv) > 1 and sys.argv[1] == 'test':
         test_main()
     else:
-        setupLogging(logging.INFO)
+        setupLogging(logging.DEBUG)
         main()
