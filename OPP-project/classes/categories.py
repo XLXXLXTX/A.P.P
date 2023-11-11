@@ -12,6 +12,12 @@ class CategoriesEncoder(JSONEncoder):
     def default(self, o :Category):
         return o.__dict__
 
+#---------------------------------------------
+# DEBUG
+#---------------------------------------------
+import logging
+#---------------------------------------------
+
 #Define Categories class
 class Categories:
     """ holds a list with all Category objects """
@@ -20,6 +26,8 @@ class Categories:
 
     @classmethod
     def load_categories(cls):
+        logging.debug(f'Categories.load_categories() ...')
+
         """ reads the categories.txt file and re-compose the Python objects
             from the json representation of categories. The content of the
             categories.txt file should look something like:
@@ -49,7 +57,9 @@ class Categories:
     
 
     @classmethod
-    def remove_category(cls, category :Category) -> None:
+    def remove_category(cls, category :Category) -> bool:
+        logging.debug(f'Categories.remove_category(category : {category.get_details}) ...')
+
         """ Removes a category from the categories collection. We pass the category
             to be removed as a parameter to teh function and then, as a first step
             we remove it from the class variable 'categories'. Then, in a second step
@@ -67,9 +77,12 @@ class Categories:
                     encoded_category = ce.encode(cat)
                     dump(encoded_category, f)
                     f.write("\n")
+            return True
+        else:
+            return False
     
     @classmethod
-    def add_category(cls, category :Category) -> None:
+    def add_category(cls, category :Category) -> bool:
         """ Adds a new category in the categories collection. We need to save the
             new category on the disk too, so we have to call teh Encoder class to
             transform teh Python object in a JSON representation
@@ -86,6 +99,9 @@ class Categories:
                 encoded_category = ce.encode(category)
                 dump(encoded_category, f)
                 f.write("\n")
+            return True
+        else:
+            return False
 
     @classmethod
     def list_categories(cls) -> None:
@@ -97,6 +113,17 @@ class Categories:
         #IMPORTANT ----------
         cls.load_categories()
         #IMPORTANT ----------
+        print(f'\nCategories list:\n')
+
+        # Create an ascii table
+
+        # 30 is the number of characters in the line
+        #print(f'\t*{"*"*30}*') 
+        # :<30 means that we want to print the text left aligned and the total
+        #print(f'\t|{"Category:":<30}|') 
+        #print(f'\t*{"*"*30}*')
 
         for c in cls.categories:
-            print(c.get_details())
+            print(f'\t-{c.name}')
+
+        print(f'\n')

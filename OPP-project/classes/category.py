@@ -5,6 +5,12 @@ Category - describes a single category
 from json import JSONEncoder, JSONDecoder, JSONDecodeError, loads, dump
 #from .category import Category
 
+#---------------------------------------------
+# DEBUG
+#---------------------------------------------
+import logging
+#---------------------------------------------
+
 class CategoryEncoder(JSONEncoder):
     # Transform the Python object into a json representation
     def default(self, o :str) -> str:
@@ -25,6 +31,7 @@ class Category:
     """ Definition of the Category class and its attributes/methods """  
     
     def __init__(self, name) -> object:
+        logging.debug(f'Category.__init__(name : {name}) ...')
         self.name = name
 
     def __eq__(self, other) -> bool:
@@ -38,6 +45,8 @@ class Category:
         return hash(self.name)
     
     def get_details(self) -> str:
+        logging.debug(f'Category.get_details() ...')
+        
         """ Returns a string with the details of the category """
         return f"Category: {self.name}"
 

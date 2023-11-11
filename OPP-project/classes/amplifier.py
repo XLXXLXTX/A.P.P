@@ -6,6 +6,11 @@ number of channels, size)
 from json import JSONEncoder, JSONDecoder, loads, dump
 from classes.product import Product
 
+#---------------------------------------------
+# DEBUG
+#---------------------------------------------
+import logging
+#---------------------------------------------
 
 class AmplifierEncoder(JSONEncoder):
     
@@ -27,10 +32,12 @@ class AmplifierDecoder(JSONDecoder):
 class Amplifier(Product):
     
     def __init__(self, name: str, price: float, power :int, num_channels :int, size :str):
+        logging.debug(f'Amplifier.__init__(name : {name}, price : {price}, power : {power}, num_channels : {num_channels}, size : {size}) ...')
         super().__init__(name, price)
         self.power = power
         self.num_channels = num_channels
         self.size = size
     
     def get_details(self) -> str:
-        return f'Amplifier: {self.name}, price: {self.price}€, power: {self.power}, num_channels: {self.num_channels}, size: {self.size}'
+        logging.debug(f'Amplifier.get_details() ...')
+        return f'Amplifier: name: {self.name}, price: {self.price}€, power: {self.power}, num_channels: {self.num_channels}, size: {self.size}'

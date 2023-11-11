@@ -12,6 +12,12 @@ from classes.turntable import Turntable, TurntableEncoder, TurntableDecoder
 
 from typing import Dict, List, Tuple
 
+#---------------------------------------------
+# DEBUG
+#---------------------------------------------
+import logging
+#---------------------------------------------
+
 class ProductsEncoder(JSONEncoder):
 
     def default(self, o :Product):
@@ -59,6 +65,8 @@ class Products:
 
     @classmethod
     def load_products(cls) -> List[Product]:
+        logging.debug(f'Products.load_products() ...')
+
         """
         Reads the products.txt file and re-compose the Python objects from 
         json representation of products.
@@ -118,6 +126,8 @@ class Products:
     
     @classmethod
     def add_product(cls, prod :Product) -> None:
+        logging.debug(f'Products.add_product(prod : {prod.get_details}) ...')
+
         """
             Adds a product to the products collection. We pass the product.
             We need to check if the product is an instance of the Product class.
@@ -161,6 +171,8 @@ class Products:
 
     @classmethod
     def remove_product(cls, prod :Product) -> None:
+        logging.debug(f'Products.remove_product(prod : {prod.get_details}) ...')
+
         """
         Removes a product from the products collection. We pass the product
         to be removed as a parameter to the function and then, as a first step
@@ -171,6 +183,8 @@ class Products:
     
     @classmethod
     def list_products(cls) -> None:
+        logging.debug(f'Products.list_products() ...')
+        
         """
         First we read the file products.txt and we deserialize the collection
         of products. Then we iterate the collection and we print each product
@@ -179,7 +193,8 @@ class Products:
 
         #print(f'Products: {cls.products}')
 
-        print(f'***Lista Products: {len(cls.products)}')
+        #print(f'***Lista Products: {len(cls.products)}')
 
         for p in cls.products:
-            print(f'✅---> 💨Type: {type(p)} 👀 {p.get_details()}')
+            #print(f'✅---> 💨Type: {type(p)} 👀 {p.get_details()}')
+            print(p.get_details())

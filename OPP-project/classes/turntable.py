@@ -5,6 +5,11 @@ connection type (wired, bluetooth), size)
 from classes.product import Product
 from json import JSONEncoder, JSONDecoder, loads, dump
 
+#---------------------------------------------
+# DEBUG
+#---------------------------------------------
+import logging
+#---------------------------------------------
 
 class TurntableEncoder(JSONEncoder):
         
@@ -24,6 +29,7 @@ class TurntableDecoder(JSONDecoder):
 class Turntable(Product):
 
     def __init__(self, name :str, price :float, speed :float, connection_type :str, size :str):
+        logging.debug(f'Turntable.__init__(name : {name}, price : {price}, speed : {speed}, connection_type : {connection_type}, size : {size}) ...')
         super().__init__(name, price)
         self.speed = speed
         if connection_type in ['wired', 'bluetooth']:
@@ -33,4 +39,5 @@ class Turntable(Product):
         self.size = size
 
     def get_details(self) -> str:
-        return f'Turntable: {self.name}, price: {self.price}€, speed: {self.speed}, connection_type: {self.connection_type}, size: {self.size}'
+        logging.debug(f'Turntable.get_details() ...')
+        return f'Turntable: name: {self.name}, price: {self.price}€, speed: {self.speed}, connection_type: {self.connection_type}, size: {self.size}'

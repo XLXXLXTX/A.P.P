@@ -5,6 +5,12 @@ channels, color, size)
 from classes.product import Product
 from json import JSONEncoder, JSONDecoder, loads, dump
 
+#---------------------------------------------
+# DEBUG
+#---------------------------------------------
+import logging
+#---------------------------------------------
+
 class ReceiverEncoder(JSONEncoder):
         
     def default(self, o :str):
@@ -24,10 +30,12 @@ class ReceiverDecoder(JSONDecoder):
 class Receiver(Product):
     
     def __init__(self, name: str, price: float, num_channels :int, color :str, size :str):
+        logging.debug(f'Receiver.__init__(name : {name}, price : {price}, num_channels : {num_channels}, color : {color}, size : {size}) ...')
         super().__init__(name, price)
         self.num_channels = num_channels
         self.color = color
         self.size = size
     
     def get_details(self) -> str:
-        return f'Receiver: {self.name}, price: {self.price}€, num_channels: {self.num_channels}, color: {self.color}, size: {self.size}'
+        logging.debug(f'Receiver.get_details() ...')
+        return f'Receiver: name: {self.name}, price: {self.price}€, num_channels: {self.num_channels}, color: {self.color}, size: {self.size}'
