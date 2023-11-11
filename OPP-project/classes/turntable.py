@@ -38,6 +38,18 @@ class Turntable(Product):
             raise ValueError('Connection type must be wired or bluetooth')
         self.size = size
 
+    def __eq__(self, other) -> bool:
+        """ Overloaded in order to verify the membership inside a collection """
+        if type(other) == type(self):
+            return self.name == other.name and self.price == other.price\
+                   and self.speed == other.speed and self.connection_type == other.connection_type\
+                   and self.size == other.size
+        else:
+            return False
+
+    def __hash__(self):
+        return hash(self.name, self.price, self.speed, self.connection_type, self.size)
+    
     def get_details(self) -> str:
         logging.debug(f'Turntable.get_details() ...')
         return f'Turntable: name: {self.name}, price: {self.price}€, speed: {self.speed}, connection_type: {self.connection_type}, size: {self.size}'

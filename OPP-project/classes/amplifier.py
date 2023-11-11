@@ -37,6 +37,18 @@ class Amplifier(Product):
         self.power = power
         self.num_channels = num_channels
         self.size = size
+
+    def __eq__(self, other) -> bool:
+        """ Overloaded in order to verify the membership inside a collection """
+        if type(other) == type(self):
+            return self.name == other.name and self.price == other.price\
+                   and self.power == other.power and self.num_channels == other.num_channels\
+                   and self.size == other.size
+        else:
+            return False
+
+    def __hash__(self):
+        return hash(self.name, self.price, self.power, self.num_channels, self.size)
     
     def get_details(self) -> str:
         logging.debug(f'Amplifier.get_details() ...')

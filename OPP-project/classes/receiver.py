@@ -36,6 +36,18 @@ class Receiver(Product):
         self.color = color
         self.size = size
     
+    def __eq__(self, other) -> bool:
+        """ Overloaded in order to verify the membership inside a collection """
+        if type(other) == type(self):
+            return self.name == other.name and self.price == other.price\
+                   and self.num_channels == other.num_channels and self.color == other.color\
+                   and self.size == other.size
+        else:
+            return False
+
+    def __hash__(self):
+        return hash(self.name, self.price, self.num_channels, self.color, self.size)
+
     def get_details(self) -> str:
         logging.debug(f'Receiver.get_details() ...')
         return f'Receiver: name: {self.name}, price: {self.price}€, num_channels: {self.num_channels}, color: {self.color}, size: {self.size}'

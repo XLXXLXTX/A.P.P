@@ -21,6 +21,16 @@ class Product(ABC):
         self.name = name
         self.price = price
 
+    def __eq__(self, other) -> bool:
+        """ Overloaded in order to verify the membership inside a collection """
+        if type(other) == type(self):
+            return self.name == other.name and self.price == other.price
+        else:
+            return False
+
+    def __hash__(self):
+        return hash(self._type, self.name, self.price)
+    
     # Define an abstract method to be implemented by the child classes
     # to get the info from the object
     @abstractmethod
