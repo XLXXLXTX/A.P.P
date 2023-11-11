@@ -78,8 +78,8 @@ class Categories:
                     dump(encoded_category, f)
                     f.write("\n")
             return True
-        else:
-            return False
+        
+        return False
     
     @classmethod
     def add_category(cls, category :Category) -> bool:
@@ -100,8 +100,8 @@ class Categories:
                 dump(encoded_category, f)
                 f.write("\n")
             return True
-        else:
-            return False
+        
+        return False
 
     @classmethod
     def list_categories(cls) -> None:
