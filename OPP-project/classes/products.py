@@ -184,7 +184,32 @@ class Products:
         we remove it from the class variable 'products'. Then, in a second step
         we iterate that collection and we serialize element by element
         """
-        pass
+
+        if prod in cls.products:
+            cls.products.remove(prod)
+            logging.debug(f'Product {prod.get_details()} removed successfully!')
+
+            re = ReceiverEncoder()
+            te = TurntableEncoder()
+            ae = AmplifierEncoder()
+            encoded_product = None
+
+            with open("products.txt", 'w') as f:
+                for p in cls.products:
+
+                    if isinstance(p, Amplifier):
+                        encoded_product = ae.encode(p)
+                    elif isinstance(p, Receiver):
+                        encoded_product = re.encode(p)
+                    elif isinstance(p, Turntable):
+                        encoded_product = te.encode(p)
+                    
+                    dump(encoded_product, f)
+                    f.write("\n")
+
+            return True
+
+        return False
     
     @classmethod
     def list_products(cls) -> None:

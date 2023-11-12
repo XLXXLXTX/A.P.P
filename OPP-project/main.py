@@ -125,6 +125,22 @@ def addProduct():
 def removeProduct():
     logging.debug(f'removeProduct() ...')
 
+    p = Products.load_products()
+    i = 0
+    print(f'\n')
+    for pro in p:
+        print(f'\t{i}) {pro.get_details()}')
+        i += 1
+    
+    pronum = input(f'\n\tType the number of the product to be removed: ')
+    pro = Products.products[int(pronum)]
+
+    if Products.remove_product(pro):
+        print(f'\t\tProduct removed successfully!')
+    else:
+        print(f'\t\tProduct not found!')
+
+
 def displayProducts():
     logging.debug(f'displayProducts() ...')
 
@@ -200,5 +216,5 @@ if __name__ == '__main__':
     if len(sys.argv) > 1 and sys.argv[1] == 'test':
         test_main()
     else:
-        setupLogging(logging.DEBUG)
+        setupLogging(logging.INFO)
         main()
