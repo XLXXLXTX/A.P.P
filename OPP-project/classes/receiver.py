@@ -11,6 +11,38 @@ from json import JSONEncoder, JSONDecoder, loads, dump
 import logging
 #---------------------------------------------
 
+class Receiver(Product):
+    
+    def __init__(self, name: str, price: float, num_channels :int, color :str, size :str):
+        logging.debug(f'Receiver.__init__(name : {name}, price : {price}, num_channels : {num_channels}, color : {color}, size : {size}) ...')
+        super().__init__(name, price)
+        self.num_channels = num_channels
+        self.color = color
+        self.size = size
+    
+    def __eq__(self, other) -> bool:
+        logging.debug(f'Receiver.__eq__(other : {other}) ...')
+        """ Overloaded in order to verify the membership inside a collection """
+
+        # First check the type of the object, to ensure both are the same type
+        if not isinstance(other, Receiver):
+            return False
+
+        logging.debug(f'return {self.name == other.name and self.price == other.price and self.num_channels == other.num_channels and self.color == other.color and self.size == other.size}')
+
+        return (self.name == other.name and
+                self.price == other.price and
+                self.num_channels == other.num_channels and
+                self.color == other.color and
+                self.size == other.size)
+
+    def __hash__(self):
+        return hash( (self.name, self.price, self.num_channels, self.color, self.size) )
+
+    def get_details(self) -> str:
+        logging.debug(f'Receiver.get_details() ...')
+        return f'Receiver: name: {self.name}, price: {self.price}€, num_channels: {self.num_channels}, color: {self.color}, size: {self.size}'
+
 class ReceiverEncoder(JSONEncoder):
         
     def default(self, o :str):
@@ -26,28 +58,3 @@ class ReceiverDecoder(JSONDecoder):
             vals.append(data[key])
         rec = Receiver(*vals)
         return rec
-
-class Receiver(Product):
-    
-    def __init__(self, name: str, price: float, num_channels :int, color :str, size :str):
-        logging.debug(f'Receiver.__init__(name : {name}, price : {price}, num_channels : {num_channels}, color : {color}, size : {size}) ...')
-        super().__init__(name, price)
-        self.num_channels = num_channels
-        self.color = color
-        self.size = size
-    
-    def __eq__(self, other) -> bool:
-        """ Overloaded in order to verify the membership inside a collection """
-        if type(other) == type(self):
-            return self.name == other.name and self.price == other.price\
-                   and self.num_channels == other.num_channels and self.color == other.color\
-                   and self.size == other.size
-        else:
-            return False
-
-    def __hash__(self):
-        return hash(self.name, self.price, self.num_channels, self.color, self.size)
-
-    def get_details(self) -> str:
-        logging.debug(f'Receiver.get_details() ...')
-        return f'Receiver: name: {self.name}, price: {self.price}€, num_channels: {self.num_channels}, color: {self.color}, size: {self.size}'

@@ -22,14 +22,22 @@ class Product(ABC):
         self.price = price
 
     def __eq__(self, other) -> bool:
+        logging.debug(f'Product.__eq__(other : {other}) ...')
         """ Overloaded in order to verify the membership inside a collection """
-        if type(other) == type(self):
-            return self.name == other.name and self.price == other.price
-        else:
+        
+        # First check the type of the object, to ensure both are the same type
+        if not isinstance(other, Product):
             return False
+        
+        logging.debug(f'return {self._type == other._type and self.name == other.name and self.price == other.price}')
+
+        return (self._type == other._type and
+                self.name == other.name and 
+                self.price == other.price)
+
 
     def __hash__(self):
-        return hash(self._type, self.name, self.price)
+        return hash( (self._type, self.name, self.price) )
     
     # Define an abstract method to be implemented by the child classes
     # to get the info from the object

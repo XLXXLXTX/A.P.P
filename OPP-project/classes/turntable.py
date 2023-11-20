@@ -11,21 +11,6 @@ from json import JSONEncoder, JSONDecoder, loads, dump
 import logging
 #---------------------------------------------
 
-class TurntableEncoder(JSONEncoder):
-        
-    def default(self, o :str):
-        return o.__dict__
-
-class TurntableDecoder(JSONDecoder):
-
-    def decode(self, o :str):
-        data = loads(o)
-        vals = []
-        for key in data.keys():
-            vals.append(data[key])
-        turn = Turntable(*vals)
-        return turn
-
 class Turntable(Product):
 
     def __init__(self, name :str, price :float, speed :float, connection_type :str, size :str):
@@ -39,17 +24,39 @@ class Turntable(Product):
         self.size = size
 
     def __eq__(self, other) -> bool:
+        logging.debug(f'Turntable.__eq__(other : {other}) ...')
         """ Overloaded in order to verify the membership inside a collection """
-        if type(other) == type(self):
-            return self.name == other.name and self.price == other.price\
-                   and self.speed == other.speed and self.connection_type == other.connection_type\
-                   and self.size == other.size
-        else:
+        
+        # First check the type of the object, to ensure both are the same type
+        if not isinstance(other, Turntable):
             return False
+        
+        logging.debug(f'return {self.name == other.name and self.price == other.price and self.speed == other.speed and self.connection_type == other.connection_type and self.size == other.size}')
+        
+        return (self.name == other.name and
+                self.price == other.price and
+                self.speed == other.speed and
+                self.connection_type == other.connection_type and
+                self.size == other.size)
 
     def __hash__(self):
-        return hash(self.name, self.price, self.speed, self.connection_type, self.size)
+        return hash( (self.name, self.price, self.speed, self.connection_type, self.size) )
     
     def get_details(self) -> str:
         logging.debug(f'Turntable.get_details() ...')
         return f'Turntable: name: {self.name}, price: {self.price}€, speed: {self.speed}, connection_type: {self.connection_type}, size: {self.size}'
+    
+class TurntableEncoder(JSONEncoder):
+        
+    def default(self, o :str):
+        return o.__dict__
+
+class TurntableDecoder(JSONDecoder):
+
+    def decode(self, o :str) -> Turntable:
+        data = loads(o)
+        vals = []
+        for key in data.keys():
+            vals.append(data[key])
+        turn = Turntable(*vals)
+        return turn
