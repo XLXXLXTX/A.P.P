@@ -8,6 +8,9 @@ from classes.products import Products
 from classes.category import Category
 from classes.categories import Categories
 
+from classes.order import Order
+from classes.orders import Orders
+
 from typing import List
 
 __colors = ['red', 'blue', 'green', 'yellow', 'black']
@@ -137,12 +140,61 @@ def test_category_encoder(lista: List[Category]) -> None:
     
     Categories.list_categories()
 
+def test_eq_amplifier() -> None:
+    amplifier1 = Amplifier("Amplificador1", 100.0, 50, 2, "Medium")
+    amplifier2 = Amplifier("Amplificador1", 100.0, 50, 2, "Medium")
+    l = [amplifier2]
+
+    for i in l:
+        print(f'Amplifier1: {amplifier1} == i: {i} --> {amplifier1 == i}')
+
+    if amplifier1 in l:
+        print(f'Amplifier1: {amplifier1} in l: {l}')
 
 # --------------------------------------------
+# Methods to test Order/Orders classes:
+# --------------------------------------------
+def test_order() -> None:
+    print('\ntest_order() ...')
+    
+    a = Amplifier("Amplificador1", 100.0, 50, 2, "Medium")
+    r = Receiver("Receiver1", 100.0, 50, "Red", "Medium")
+    t = Turntable("Turntable1", 100.0, 50, "wired", "Medium")
+
+    products = [a]#, r, t]
+    quantities = [1]#, 2, 3]
+
+    order_obj = Order(products, quantities, 'Calle Falsa 123')
+    #print(f'{order_obj.get_details()}\n')
+    
+    Orders.add_order(order_obj)
+
+    p2 = [a, r, t]
+    q2 = [1, 2, 3]
+
+    order_obj2 = Order(p2, q2, 'Freddys fazzbear pizza XD')
+    #print(f'{order_obj2.get_details()}\n')
+
+    Orders.add_order(order_obj2)
+
+    #order_simple = Order([a], [10], 'Calle Falsa 456')
+    
+    #Orders.add_order(order_simple)
+
+    Orders.list_orders()
+
+def test_orders_decoder() -> None:
+    print('\ttest_orders_decoder() ...')
+
+    Orders.list_orders()
+
+# --------------------------------------------
+
 
 def test_main() -> None:
     print('\ntest_main() ...')
 
+    """
     # test product implementation:
     test_product()
 
@@ -164,4 +216,13 @@ def test_main() -> None:
 
     # test Encoder/Decoder Category/Categories implementation:
     c = test_category()
-    test_category_encoder(c)
+    test_category_encoder(c)"""
+
+    # test Order/Orders implementation:
+    test_order()
+
+    test_orders_decoder() 
+    
+    #TODO: still not working in products.py properly
+    # test __eq__ implementation: 
+    #test_eq_amplifier()
