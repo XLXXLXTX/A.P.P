@@ -18,11 +18,7 @@ from typing import Dict, List, Tuple
 import logging
 #---------------------------------------------
 
-class ProductsEncoder(JSONEncoder):
 
-    def default(self, o :Product):
-        return o.__dict__
-    
 class Products:
     """ Holds a list with all the products in the store """
 
@@ -30,12 +26,26 @@ class Products:
     
     @classmethod
     def _get_product_type(cls, data: str) -> Tuple[str, str]:
+        logging.debug(f'Products._get_product_type() ...')
+        
         # Buscar la posición de "_type"
-        type_index = data.find('"_type":')
+        type_index_1 = data.find('"_type":')
+        type_index_2 = data.find("'_type':")
+
+        ##print(f'type_index_1: {type_index_1} || type_index_2: {type_index_2}')
 
         # Verificar si "_type" está presente en la cadena
-        if type_index == -1:
+        if type_index_1 == -1 and type_index_2 == -1:
             raise ValueError("'_type' not found in the dictionary.")
+
+        type_index = None
+
+        if type_index_1 != -1:
+            type_index = type_index_1
+        elif type_index_2 != -1:
+            type_index = type_index_2
+
+        ##print(f'type_index: {type_index}')
 
         # Extraer la parte del string que contiene "_type" y el valor
         type_and_rest = data[type_index:]
@@ -62,7 +72,44 @@ class Products:
         # Return the product type and the product data
         return product_type, product_data
 
+    @classmethod
+    def dict_to_product(cls, data: dict) -> Product:
+        logging.debug(f'Products.dict_to_product() ...')
 
+        """
+        Converts a dictionary into a product object
+        """
+
+        rd = ReceiverDecoder()
+        td = TurntableDecoder()
+        ad = AmplifierDecoder()
+
+        # pass the product in str but with '' to make sure its formatted correctly
+        # as its a "json" str
+        pt, pd = cls._get_product_type(str(data).replace("'", '"'))
+
+        decoded_product = None
+
+        if pt == 'Receiver':
+            logging.debug(f'   Decoding receiver...: {str(pd)}')
+            decoded_product = rd.decode(str(pd))
+            logging.debug(f'   Decoded product: {decoded_product.get_details()}')
+
+        elif pt == 'Turntable':
+            logging.debug(f'   Decoding turntable...: {str(pd)}')
+            decoded_product = td.decode(str(pd))
+            logging.debug(f'Decoded product: {decoded_product.get_details()}')
+
+        elif pt == 'Amplifier':
+            logging.debug(f'   Decoding amplifier...: {str(pd)}')
+            decoded_product = ad.decode(str(pd))
+            logging.debug(f'Decoded product: {decoded_product.get_details()}')
+
+        else:
+            print(f'ERROR Decoding product: Unknown product type {pt}')
+
+        return decoded_product
+    
     @classmethod
     def load_products(cls) -> List[Product]:
         logging.debug(f'Products.load_products() ...')
@@ -71,6 +118,9 @@ class Products:
         Reads the products.txt file and re-compose the Python objects from 
         json representation of products.
         """
+
+        # clear list, to avoid duplicate products (file and memory)
+        cls.orders = []
 
         rd = ReceiverDecoder()
         td = TurntableDecoder()
@@ -85,7 +135,6 @@ class Products:
 
                     pt, pd = cls._get_product_type(str(data))
 
-                    logging.debug('Decoding product...')
                     decoded_product = None
 
                     if pt == 'Receiver':
@@ -144,8 +193,12 @@ class Products:
         te = TurntableEncoder()
         ae = AmplifierEncoder()
 
-        #cls.products = cls.load_products()
-        
+        cls.products = cls.load_products()
+
+        # TODO: No compara bien xd 
+        ##for p in cls.products:
+        ##    print(f'*Comparando {p.get_details()}\n\t con\n\t {prod.get_details()}: {p == prod}')
+
         if prod not in cls.products:
 
             if not isinstance(prod, Product):
@@ -169,9 +222,10 @@ class Products:
                     dump(ep, f)
                     f.write("\n")
                 
-                return True
+            return True
         
-        return False
+        else:
+            return False
 
 
     @classmethod

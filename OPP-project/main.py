@@ -2,11 +2,12 @@
 from classes.category import Category
 from classes.categories import Categories
 from classes.products import Products
-from classes.product import Product
+#from classes.product import Product
 from classes.amplifier import Amplifier
-#from classes.orders import Orders
 from classes.receiver import Receiver
 from classes.turntable import Turntable
+from classes.order import Order
+from classes.orders import Orders
 
 #---------------------------------------------
 # DEBUG
@@ -53,8 +54,8 @@ def removeCategory():
         print(f'\t{i}) {cat.name}')
         i += 1
     
-    catnum = input(f'\n\tType the number of the category to be removed: ')
-    cat = Categories.categories[int(catnum)]
+    catnum = int( input(f'\n\tType the number of the category to be removed: ') )
+    cat = Categories.categories[catnum]
 
     if Categories.remove_category(cat):
         print(f'\t\tCategory removed successfully!')
@@ -146,12 +147,90 @@ def displayProducts():
 
     Products.list_products()
 
+
+#---------------------------------------------
+
 def placeOrder():
     logging.debug(f'placeOrder() ...')
+
+    p = Products.load_products()
+    
+    if len(p) == 0: 
+        print(f'\tAdd some products to the order catalog!')
+        return
+
+    # set the number for the option to exit the menu for adding products to the order
+    exitnum = len(p)
+    
+    # set up the vars for the order object constructor
+    productsorder = []
+    quantitiesorder = []
+    address = ""
+    
+    # fill the address
+    address = input(f'\n\tType your address: ')
+
+    print(f'\n')
+
+    # print all products avaliable in the shop
+    for i, pro in enumerate(p):
+        print(f'\t{i}) {pro.get_details()}')
+
+    print(f'\t{exitnum}) --- End Order ---')
+
+    # loop to add more than one product
+    while True:
+
+        # error handlelinng for product selection
+        try:
+            prodnum = int(input(f'\n\tType the number of the product to be ordered: '))
+        except ValueError:
+            print('\n\t\t***INVALID INPUT: Please enter a valid number.')
+            continue
+        
+        # if user want to exit 
+        if prodnum == exitnum:
+            # exit while loop
+            break
+        # make sure user selected a product 
+        elif 0 <= prodnum < len(p):
+            
+            # set up a var outside de loop to retrieve user choice
+            quan = 0
+            
+            # loop to select quantities for this product
+            while True:
+                try:
+                    quan = int(input(f'\n\tType how many of this product you want to order: '))
+                    
+                    if quan > 0:
+                        break
+                    else:
+                        print(f'\n\t\t***INVALID INPUT: Quantity needs to be greater than 0, try again!')
+                except ValueError:
+                    print('\n\t\t***INVALID INPUT: Please enter a valid number.')
+
+            # append products and quantities to list
+            productsorder.append(p[prodnum])
+            quantitiesorder.append(quan)
+        
+        else:
+            print('\n\t\t***INVALID INPUT: Please enter a valid product number.')
+
+    # create order with the parameters the user filled in the step by step before
+    o = Order(productsorder, quantitiesorder, address)
+
+    # check return code of the process of adding a new order 
+    if Orders.add_order(o):
+        print(f'\t\tOrder added successfully')
+    else:
+        print(f'\t\tThere was an error while processing your order! ...')
 
 def displayOrders():
     logging.debug(f'displayOrders() ...')
 
+    Orders.list_orders()
+    
 def exit_loop():
     logging.debug(f'exit_loop() ...')
     exit(0)
@@ -199,7 +278,7 @@ def main():
         
         print(f'\n{"*" * 50}\n')
         
-        op = int(input("\nEnter your operation:"))
+        op = int( input("\nEnter your operation:") )
         func = operations.get(op, error_handler)
         
 
@@ -213,8 +292,8 @@ def main():
 # Check if runnig as a script, not as a module
 #---------------------------------------------
 if __name__ == '__main__':
+    setupLogging(logging.INFO)
     if len(sys.argv) > 1 and sys.argv[1] == 'test':
         test_main()
     else:
-        setupLogging(logging.INFO)
         main()
