@@ -1,9 +1,13 @@
+# Advanced Python Programming - OPP Project | Author: Javier Pardos | javier.pardos10@e-uvt.ro
+
 """
 Turntable  -  inherits  the  Product  class  and  contains  specific  info  for  that  kind  of  product  (speed, 
 connection type (wired, bluetooth), size)
 """
+
+from json import JSONEncoder, JSONDecoder, loads
+
 from classes.product import Product
-from json import JSONEncoder, JSONDecoder, loads, dump
 
 #---------------------------------------------
 # DEBUG
@@ -15,31 +19,32 @@ class Turntable(Product):
 
     def __init__(self, name :str, price :float, speed :float, connection_type :str, size :str):
         logging.debug(f'Turntable.__init__(name : {name}, price : {price}, speed : {speed}, connection_type : {connection_type}, size : {size}) ...')
+        
         super().__init__(name, price)
+        
         self.speed = speed
         if connection_type in ['wired', 'bluetooth']:
             self.connection_type = connection_type
         else:
-            raise ValueError('Connection type must be wired or bluetooth')
+            raise ValueError('ERROR: Connection type must be wired or bluetooth')
         self.size = size
 
     def __eq__(self, other) -> bool:
-        logging.debug(f'Turntable.__eq__(other : {other}) ...')
         """ Overloaded in order to verify the membership inside a collection """
+
+        logging.debug(f'Turntable.__eq__(other : {other}) ...')
         
-        # First check the type of the object, to ensure both are the same type
+        # first check the type of the object, to ensure both are the same type
         if not isinstance(other, Turntable):
             return False
-        
-        logging.debug(f'return {self.name == other.name and self.price == other.price and self.speed == other.speed and self.connection_type == other.connection_type and self.size == other.size}')
-        
+                
         return (self.name == other.name and
                 self.price == other.price and
                 self.speed == other.speed and
                 self.connection_type == other.connection_type and
                 self.size == other.size)
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash( (self.name, self.price, self.speed, self.connection_type, self.size) )
     
     def get_details(self) -> str:
@@ -48,7 +53,7 @@ class Turntable(Product):
     
 class TurntableEncoder(JSONEncoder):
         
-    def default(self, o :str):
+    def default(self, o :str) -> str:
         return o.__dict__
 
 class TurntableDecoder(JSONDecoder):
