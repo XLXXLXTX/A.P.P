@@ -7,6 +7,7 @@ Products - contains a collections of all the products in the store
 from typing import List, Tuple
 
 from json import JSONDecodeError, loads, dump
+import json
 
 from classes.product import Product
 from classes.amplifier import Amplifier, AmplifierEncoder, AmplifierDecoder
@@ -26,59 +27,41 @@ class Products:
     
     @classmethod
     def _get_product_type(cls, data: str) -> Tuple[str, str]:
+
+        """
+        Auxiliary function to get the product type from a given dictionary
+        """
+
         logging.debug(f'Products._get_product_type() ...')
-        
-        # Buscar la posición de "_type"
-        type_index_1 = data.find('"_type":')
-        type_index_2 = data.find("'_type':")
 
-        ##print(f'type_index_1: {type_index_1} || type_index_2: {type_index_2}')
+        # parse the string into a dictionary
+        try:
+            data_dict = json.loads(data)
+        except json.JSONDecodeError:
+            raise ValueError("Invalid JSON data.")
 
-        # Verificar si "_type" está presente en la cadena
-        if type_index_1 == -1 and type_index_2 == -1:
+        # get the product type
+        product_type = data_dict.get('_type')
+        if product_type is None:
             raise ValueError("'_type' not found in the dictionary.")
 
-        type_index = None
+        # remove the product type from the dictionary
+        del data_dict['_type']
 
-        if type_index_1 != -1:
-            type_index = type_index_1
-        elif type_index_2 != -1:
-            type_index = type_index_2
+        # convert the dictionary back into a string
+        product_data = json.dumps(data_dict)
 
-        ##print(f'type_index: {type_index}')
-
-        # Extraer la parte del string que contiene "_type" y el valor
-        type_and_rest = data[type_index:]
-
-        # Split the string into two parts using the commas as separators
-        parts = type_and_rest.split(',')
-
-        # Obtain the product type
-        product_type = parts[0].split(':')[1].strip(' "')
-
-        # Define dict with the values to create the product (amplifier, receiver, turntable ...)
-        product_data = {}
-
-        for part in parts[1:]:
-            key, value = part.split(':', 1)  # Limitamos a una sola división para manejar valores con comas
-            key = key.strip(' "') # Delete spaces and quotes
-            value = value.strip(' "') # Delete spaces and quotes
-            value = value.rstrip(' "}') # Delete spaces, quotes and closing curly bracket
-            product_data[key] = value #Add key and value to the dict
-
-
-        product_data = str(product_data).replace("'", '"')
-
-        # Return the product type and the product data
+        # return the product type and the product data
         return product_type, product_data
-
+    
     @classmethod
     def dict_to_product(cls, data: dict) -> Product:
-        logging.debug(f'Products.dict_to_product() ...')
 
         """
-        Converts a dictionary into a product object
+        Auxiliary function to convert a dictionary into a product object
         """
+                
+        logging.debug(f'Products.dict_to_product() ...')
 
         rd = ReceiverDecoder()
         td = TurntableDecoder()
