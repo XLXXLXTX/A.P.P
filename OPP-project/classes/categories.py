@@ -5,6 +5,8 @@ Categories - will contain a collection of all categories we enter.
 Examples of categories: Amplifiers, Receivers, Speakers,  Turntables and so on
 """
 
+from typing import List
+
 from json import JSONDecodeError, loads, dump
 
 from classes.category import Category, CategoryDecoder, CategoryEncoder
@@ -22,7 +24,7 @@ class Categories:
     categories = []
 
     @classmethod
-    def load_categories(cls):
+    def load_categories(cls) -> List[Category]:
         logging.debug(f'Categories.load_categories() ...')
 
         """ reads the categories.txt file and re-compose the Python objects
@@ -57,6 +59,30 @@ class Categories:
         
         return cls.categories
     
+    @classmethod
+    def add_category(cls, category :Category) -> bool:
+        logging.debug(f'Categories.add_category(category : {category.get_details}) ...')
+
+        """ Adds a new category in the categories collection. We need to save the
+            new category on the disk too, so we have to call teh Encoder class to
+            transform teh Python object in a JSON representation
+        """
+
+        # fill the memory list with the categories from the file
+        cls.load_categories()
+        
+        # check if it exists in the list and remove it
+        if category not in cls.categories:
+            cls.categories.append(category)
+            # overwrite the file with the new memory list
+            with open("categories.txt", 'a') as f:
+                ce = CategoryEncoder()
+                encoded_category = ce.encode(category)
+                dump(encoded_category, f)
+                f.write("\n")
+            return True
+        
+        return False
 
     @classmethod
     def remove_category(cls, category :Category) -> bool:
@@ -80,31 +106,6 @@ class Categories:
                     encoded_category = ce.encode(cat)
                     dump(encoded_category, f)
                     f.write("\n")
-            return True
-        
-        return False
-    
-    @classmethod
-    def add_category(cls, category :Category) -> bool:
-        logging.debug(f'Categories.add_category(category : {category.get_details}) ...')
-
-        """ Adds a new category in the categories collection. We need to save the
-            new category on the disk too, so we have to call teh Encoder class to
-            transform teh Python object in a JSON representation
-        """
-
-        # fill the memory list with the categories from the file
-        cls.load_categories()
-        
-        # check if it exists in the list and remove it
-        if category not in cls.categories:
-            cls.categories.append(category)
-            # overwrite the file with the new memory list
-            with open("categories.txt", 'a') as f:
-                ce = CategoryEncoder()
-                encoded_category = ce.encode(category)
-                dump(encoded_category, f)
-                f.write("\n")
             return True
         
         return False

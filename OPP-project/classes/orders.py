@@ -5,6 +5,8 @@ Orders  -  models  an  order  to  be  placed  in  the  store.  Basically  a  col
 with a destination address
 """
 
+from typing import List
+
 from json import JSONDecodeError, loads, dump
 
 from classes.order import Order, OrderEncoder, OrderDecoder
@@ -20,7 +22,7 @@ class Orders(object):
     orders = []
 
     @classmethod
-    def load_orders(cls):
+    def load_orders(cls) -> List[Order]:
         logging.debug(f'Orders.load_orders() ...')
         
         # clear list, to avoid duplicate orders (file and memory)
@@ -43,13 +45,10 @@ class Orders(object):
                 print(f'ERROR: {e}')
             elif isinstance(e, FileNotFoundError):
                 print(f'ERROR: {e}')
-            else:
-                print(f'ERROR: {e}')
-                
+
             cls.orders = []
         
         return cls.orders
-
 
     @classmethod
     def add_order(cls, order : Order) -> bool:
@@ -57,25 +56,34 @@ class Orders(object):
         
         # not checking if the order already exists in the list 
         # because orders with the same products and quantities can exist 
+        try:
 
-        o = { "products": [], "quantities": [], "address": order.address}
+            o = { "products": [], "quantities": [], "address": order.address}
 
-        # combine the products and quantities lists into a single dictionary
-        for p, q in zip(order.products, order.quantities):
-            o["products"].append(p.__dict__) # with __dict__ we get the object's attributes as a dictionary 
-            o["quantities"].append(q)
+            # combine the products and quantities lists into a single dictionary
+            for p, q in zip(order.products, order.quantities):
+                o["products"].append(p.__dict__) # with __dict__ we get the object's attributes as a dictionary 
+                o["quantities"].append(q)
 
-        oe = OrderEncoder()
-        order_encoded = oe.encode(o)
+            oe = OrderEncoder()
+            order_encoded = oe.encode(o)
 
-        with open("orders.txt", "a") as f:
-            dump(order_encoded, f)
-            f.write(f'\n')
+            with open("orders.txt", "a") as f:
+                dump(order_encoded, f)
+                f.write(f'\n')
 
-        return True
+            return True
+        
+        except (JSONDecodeError, FileNotFoundError) as e:
+            if isinstance(e, JSONDecodeError):
+                print(f'ERROR: {e}')
+            elif isinstance(e, FileNotFoundError):
+                print(f'ERROR: {e}')
 
+            return False
+        
     @classmethod
-    def remove_order(cls, ordernum: int):
+    def remove_order(cls, ordernum: int) -> bool:
         logging.debug(f'Orders.remove_order() ...')
 
         if ordernum in range(len(cls.orders)):
@@ -96,7 +104,7 @@ class Orders(object):
         return False
 
     @classmethod
-    def list_orders(cls):
+    def list_orders(cls) -> None:
         logging.debug(f'Orders.list_orders() ...')
 
         cls.orders = cls.load_orders()

@@ -1,23 +1,23 @@
+# Advanced Python Programming - OPP Project | Author: Javier Pardos | javier.pardos10@e-uvt.ro
+
 """
 Products - contains a collections of all the products in the store
 """
+
+from typing import List, Tuple
+
+from json import JSONDecodeError, loads, dump
+
 from classes.product import Product
-from json import JSONEncoder, JSONDecodeError, loads, dump
-
-import json
-
 from classes.amplifier import Amplifier, AmplifierEncoder, AmplifierDecoder
 from classes.receiver import Receiver, ReceiverEncoder, ReceiverDecoder
 from classes.turntable import Turntable, TurntableEncoder, TurntableDecoder
-
-from typing import Dict, List, Tuple
 
 #---------------------------------------------
 # DEBUG
 #---------------------------------------------
 import logging
 #---------------------------------------------
-
 
 class Products:
     """ Holds a list with all the products in the store """
@@ -120,7 +120,7 @@ class Products:
         """
 
         # clear list, to avoid duplicate products (file and memory)
-        cls.orders = []
+        cls.products = []
 
         rd = ReceiverDecoder()
         td = TurntableDecoder()
@@ -157,10 +157,12 @@ class Products:
                     
                     logging.debug(f'      Decoded product: {decoded_product.get_details()}')
 
-                    #TODO: not working properly: product is always added, even when the list already contains a product with same details ??? (check it)
+                    #TODO: not working properly: product is always added, even when 
+                    # the list already contains a product with same details 
+                    # so that's why the trick of cls.products = []
                     if decoded_product not in cls.products:
                         cls.products.append(decoded_product)
-                        logging.debug(f'Adding product {decoded_product} | 👌 Conteo: {len(cls.products)} ')
+                        logging.debug(f'Adding product {decoded_product} | 👌 Count: {len(cls.products)} ')
                     
         except (JSONDecodeError, FileNotFoundError) as e:
             if isinstance(e, JSONDecodeError):
@@ -227,7 +229,6 @@ class Products:
         else:
             return False
 
-
     @classmethod
     def remove_product(cls, prod :Product) -> bool:
         logging.debug(f'Products.remove_product(prod : {prod.get_details}) ...')
@@ -238,7 +239,7 @@ class Products:
         we remove it from the class variable 'products'. Then, in a second step
         we iterate that collection and we serialize element by element
         """
-
+    
         if prod in cls.products:
             cls.products.remove(prod)
             logging.debug(f'Product {prod.get_details()} removed successfully!')
@@ -274,6 +275,10 @@ class Products:
         of products. Then we iterate the collection and we print each product
         """
         cls.products = cls.load_products()
+
+        if len(cls.products) == 0:
+            print(f'\tNo products to show, Add some products first!')
+            return
 
         for p in cls.products:
             print(f'\t-{p.get_details()}')
