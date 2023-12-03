@@ -1,16 +1,13 @@
+# Advanced Python Programming - OPP Project | Author: Javier Pardos | javier.pardos10@e-uvt.ro
+
 """
 Categories - will contain a collection of all categories we enter. 
 Examples of categories: Amplifiers, Receivers, Speakers,  Turntables and so on
 """
 
-from json import JSONEncoder, JSONDecodeError, loads, dump
+from json import JSONDecodeError, loads, dump
+
 from classes.category import Category, CategoryDecoder, CategoryEncoder
-
-class CategoriesEncoder(JSONEncoder):
-    """ From Python object to json representation """
-
-    def default(self, o :Category):
-        return o.__dict__
 
 #---------------------------------------------
 # DEBUG
@@ -42,17 +39,22 @@ class Categories:
             list. We have avoided this by overloading the __eq__() operator in
             Category class. More on this during the lectures.
         """
+
         dc = CategoryDecoder()
 
         try:
             with open("categories.txt") as f:
                 for line in f:
                     data = loads(line)
+
                     decoded_category = dc.decode(data)
+
                     if decoded_category not in cls.categories:
                         cls.categories.append(decoded_category)
+
         except (JSONDecodeError, FileNotFoundError) as e:
             cls.categories = []
+        
         return cls.categories
     
 
@@ -65,12 +67,13 @@ class Categories:
             we remove it from the class variable 'categories'. Then, in a second step
             we iterate that collection and we serialize element by element
         """
-        #IMPORTANT ----------
+        # fill the memory list with the categories from the file
         cls.load_categories()
-        #IMPORTANT ----------
 
+        # check if it exists in the list and remove it
         if category in cls.categories:
             cls.categories.remove(category)
+            # overwrite the file with the new memory list
             with open("categories.txt", 'w') as f:
                 for cat in cls.categories:
                     ce = CategoryEncoder()
@@ -83,17 +86,20 @@ class Categories:
     
     @classmethod
     def add_category(cls, category :Category) -> bool:
+        logging.debug(f'Categories.add_category(category : {category.get_details}) ...')
+
         """ Adds a new category in the categories collection. We need to save the
             new category on the disk too, so we have to call teh Encoder class to
             transform teh Python object in a JSON representation
         """
 
-        #IMPORTANT ----------
+        # fill the memory list with the categories from the file
         cls.load_categories()
-        #IMPORTANT ----------
-
+        
+        # check if it exists in the list and remove it
         if category not in cls.categories:
             cls.categories.append(category)
+            # overwrite the file with the new memory list
             with open("categories.txt", 'a') as f:
                 ce = CategoryEncoder()
                 encoded_category = ce.encode(category)
@@ -105,23 +111,20 @@ class Categories:
 
     @classmethod
     def list_categories(cls) -> None:
+        logging.debug(f'Categories.list_categories() ...')
+
         """
         First we read the file categories.txt and we deserialize the collection
         of categories. Then we iterate the collection and we print each category
         """
         
-        #IMPORTANT ----------
-        cls.load_categories()
-        #IMPORTANT ----------
+        cls.categories = cls.load_categories()
+
+        if len(cls.categories) == 0:
+            print(f'\tNo categories to show, Add some categories first!')
+            return
+
         print(f'\nCategories list:\n')
-
-        # Create an ascii table
-
-        # 30 is the number of characters in the line
-        #print(f'\t*{"*"*30}*') 
-        # :<30 means that we want to print the text left aligned and the total
-        #print(f'\t|{"Category:":<30}|') 
-        #print(f'\t*{"*"*30}*')
 
         for c in cls.categories:
             print(f'\t-{c.name}')
