@@ -1,12 +1,13 @@
+# Advanced Python Programming - OPP Project | Author: Javier Pardos | javier.pardos10@e-uvt.ro
+
 """
 Orders  -  models  an  order  to  be  placed  in  the  store.  Basically  a  collection  of  products  and  quantities  also 
 with a destination address
 """
 
-from classes.order import Order, OrderEncoder, OrderDecoder
-from json import JSONEncoder, JSONDecodeError, loads, dump
+from json import JSONDecodeError, loads, dump
 
-from typing import List
+from classes.order import Order, OrderEncoder, OrderDecoder
 
 #---------------------------------------------
 # DEBUG
@@ -25,7 +26,6 @@ class Orders(object):
         # clear list, to avoid duplicate orders (file and memory)
         cls.orders = []
         
-        # DONE: needs to be implemented
         od = OrderDecoder()
         
         try: 
@@ -33,11 +33,7 @@ class Orders(object):
                 for line in f:
                     data = loads(line)
 
-                    ##print(f'Loading order: {data}')
-
                     decoded_order = od.decode(str(data))
-
-                    ##print(f'Decoded order: {decoded_order.get_details()}')
 
                     cls.orders.append(decoded_order)
                     logging.debug(f'Adding order {decoded_order} | 👌 Conteo: {len(cls.orders)} ')
@@ -59,26 +55,19 @@ class Orders(object):
     def add_order(cls, order : Order) -> bool:
         logging.debug(f'Orders.add_order() ...')
         
-        # Not checking if the order already exists in the list 
+        # not checking if the order already exists in the list 
         # because orders with the same products and quantities can exist 
 
         o = { "products": [], "quantities": [], "address": order.address}
 
-        #print(f'o: {o}')
-        #print(f'o["products"]: {o["products"]}')
-        #print(f'o["quantities"]: {o["quantities"]}')
-        #print(f'o["address"]: {o["address"]}')
-
-        # Combine the products and quantities lists into a single dictionary
+        # combine the products and quantities lists into a single dictionary
         for p, q in zip(order.products, order.quantities):
-            o["products"].append(p.__dict__) #With __dict__ we get the object's attributes as a dictionary 
+            o["products"].append(p.__dict__) # with __dict__ we get the object's attributes as a dictionary 
             o["quantities"].append(q)
 
         oe = OrderEncoder()
         order_encoded = oe.encode(o)
 
-        #cls.orders.append(o)
-        #logging.debug(f'Adding order {o}')
         with open("orders.txt", "a") as f:
             dump(order_encoded, f)
             f.write(f'\n')
@@ -92,16 +81,29 @@ class Orders(object):
         if ordernum in range(len(cls.orders)):
             logging.debug(f'Removing order {cls.orders[ordernum]}')
             cls.orders.pop(ordernum)
+            
+            # after removing the order from the list on memory", we need to update the file
+            # so we overwrite the file with the new list of orders
+            with open("orders.txt", "w") as f:
+                for o in cls.orders:
+                    oe = OrderEncoder()
+                    order_encoded = oe.encode(o)
+                    dump(order_encoded, f)
+                    f.write(f'\n')
+            
             return True
-
+            
         return False
 
     @classmethod
     def list_orders(cls):
         logging.debug(f'Orders.list_orders() ...')
 
-        # DONE: needs to be implemented
         cls.orders = cls.load_orders()
+
+        if len(cls.orders) == 0:
+            print(f'\tNo orders to show, Add some orders first!')
+            return
 
         for o in cls.orders:
             print(f'{o.get_details()}')
