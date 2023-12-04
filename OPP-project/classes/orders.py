@@ -38,7 +38,7 @@ class Orders(object):
                     decoded_order = od.decode(str(data))
 
                     cls.orders.append(decoded_order)
-                    logging.debug(f'Adding order {decoded_order} | 👌 Conteo: {len(cls.orders)} ')
+                    logging.debug(f'Adding order {decoded_order} | 👌 Count: {len(cls.orders)} ')
 
         except (JSONDecodeError, FileNotFoundError) as e:
             if isinstance(e, JSONDecodeError):

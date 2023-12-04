@@ -180,9 +180,6 @@ class Products:
 
         cls.products = cls.load_products()
 
-        # TODO: No compara bien xd 
-        ##for p in cls.products:
-        ##    print(f'*Comparando {p.get_details()}\n\t con\n\t {prod.get_details()}: {p == prod}')
 
         if prod not in cls.products:
 
