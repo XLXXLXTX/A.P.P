@@ -96,6 +96,12 @@ def addCategory():
 def removeCategory():
     logging.debug(f'removeCategory() ...')
 
+    loadC = Categories.load_categories()
+
+    if len(loadC) == 0:
+        print(f'\tAdd some categories to the catalog!')
+        return
+
     printNumberedMenu(Categories.load_categories())
     
     catnum = int( input(f'\n\tType the number of the category to be removed: ') )
@@ -172,7 +178,13 @@ def addProduct():
 def removeProduct():
     logging.debug(f'removeProduct() ...')
 
-    printNumberedMenu(Products.load_products())
+    loadP = Products.load_products()
+
+    if len(loadP) == 0:
+        print(f'\tAdd some products to the catalog!')
+        return
+
+    printNumberedMenu(loadP)
 
     pronum = int( input(f'\n\tType the number of the product to be removed: ') )
     
@@ -258,6 +270,15 @@ def error_handler():
     logging.debug(f'error_handler() ...')
     print("This operation does not exist ...")
 
+
+# def to create the files if they don't exist, or overwrite them if they do
+def createFile(filename :str) -> None:
+    logging.debug(f'checkFiles({filename}) ...')
+
+    # open the file in write mode, which will create the file if it doesn't exist
+    with open(filename, 'w') as f:
+        pass
+
 #---------------------------------------------
 # Main funct
 #---------------------------------------------
@@ -306,6 +327,14 @@ def main():
 #---------------------------------------------
 if __name__ == '__main__':
     setupLogging(logging.INFO)
+
+    # define list of filenames to check
+    filenames = ['products.txt', 'categories.txt', 'orders.txt']
+
+    # call function to check for specific files that will be used in the program
+    for filename in filenames:
+        createFile(filename)
+
     if len(sys.argv) > 1 and sys.argv[1] == 'test':
         test_main()
     else:
