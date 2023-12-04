@@ -18,31 +18,6 @@ __size = ['small', 'medium', 'large', 'extra large', 'extra extra large']
 __connection_type = ['wired', 'bluetooth', 'wired', 'bluetooth', 'asdasd']
 __categories = ['Amplifiers', 'Receivers', 'Turntables']
 
-"""
-def test_addCategory():
-    pass
-
-def test_removeCategory():
-    pass
-
-def test_displayCategories():
-    pass
-
-def test_addProduct():
-    pass
-
-def test_removeProduct():   
-    pass
-
-def test_displayProducts():
-    pass
-
-def test_placeOrder():
-    pass
-
-def test_displayOrders():
-    pass
-"""
 
 def test_product() -> None:
     print('\ntest_product() ...')
@@ -52,7 +27,6 @@ def test_product() -> None:
         print(p.get_details())
     except Exception as e:
         print(f'ERROR: {e}')
-
 
 def test_receiver() -> List[Receiver]:
     print('\ntest_receiver() ...')
@@ -65,8 +39,7 @@ def test_receiver() -> List[Receiver]:
     for r in receivers:
         print(r.get_details())
 
-    return receivers
-        
+    return receivers        
 
 def test_turntable() -> List[Turntable]:
     print('\ntest_turntable() ...')
@@ -121,6 +94,8 @@ def test_encoder(lista :List[Product]) -> None:
 
 def test_category() -> List[Category]:
     print('\ntest_category() ...')
+
+    print(f'\n')
     
     categories = []
 
@@ -184,7 +159,7 @@ def test_order() -> None:
     Orders.list_orders()
 
 def test_orders_decoder() -> None:
-    print('\ttest_orders_decoder() ...')
+    print('\ntest_orders_decoder() ...')
 
     Orders.list_orders()
 
@@ -194,7 +169,7 @@ def test_orders_decoder() -> None:
 def test_main() -> None:
     print('\ntest_main() ...')
 
-    """
+    
     # test product implementation:
     test_product()
 
@@ -216,11 +191,12 @@ def test_main() -> None:
 
     # test Encoder/Decoder Category/Categories implementation:
     c = test_category()
-    test_category_encoder(c)"""
+    test_category_encoder(c)
 
     # test Order/Orders implementation:
     test_order()
 
+    # test Orders Decoder implementation (reading from file):
     test_orders_decoder() 
     
     #TODO: still not working in products.py properly

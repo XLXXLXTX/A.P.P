@@ -34,6 +34,26 @@ class Order:
         self.products = products
         self.quantities = quantities
 
+
+    def __eq__(self, other) -> bool:
+        """ Overloaded in order to verify the membership inside a collection """
+        
+        logging.debug(f'Order.__eq__(other : {other}) ...')
+        
+        # first check the type of the object, to ensure both are the same type
+        if not isinstance(other, Order):
+            return False
+        
+        return (self.address == other.address and 
+                len(self.products) == len(other.products) and
+                len(self.quantities) == len(other.quantities) and
+                self.products == other.products and
+                self.quantities == other.quantities)
+
+    def __hash__(self) -> int:
+        logging.debug(f'Amplifier.__hash__() ...')
+
+        return hash( (self.address, self.products, self.quantities) )
         
     def get_details(self) -> str:
         logging.debug(f'Order.get_details() ...')
