@@ -85,6 +85,24 @@ class TestOPPProject(unittest.TestCase):
 
         self.assertEqual(category.name, "Test Category")
 
+    def test_all_categories(self):
+            
+            categories = Categories()
+    
+            c = Category("Test Category")
+    
+            categories.add_category(c)
+    
+            lcAdd = categories.load_categories()
+    
+            self.assertEqual(len(lcAdd), 1)
+    
+            categories.remove_category(c)
+    
+            lcRem = categories.load_categories()
+    
+            self.assertEqual(len(lcRem), 0)
+
     def test_order(self):
         
         products = [
