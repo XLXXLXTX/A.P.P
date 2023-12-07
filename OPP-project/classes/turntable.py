@@ -5,6 +5,7 @@ Turntable  -  inherits  the  Product  class  and  contains  specific  info  for 
 connection type (wired, bluetooth), size)
 """
 
+from typing import Dict, Any
 from json import JSONEncoder, JSONDecoder, loads
 
 from classes.product import Product
@@ -53,7 +54,7 @@ class Turntable(Product):
     
 class TurntableEncoder(JSONEncoder):
         
-    def default(self, o :str) -> str:
+    def default(self, o :str) -> Dict[str, Any]:
         return o.__dict__
 
 class TurntableDecoder(JSONDecoder):

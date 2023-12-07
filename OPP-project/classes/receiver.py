@@ -5,6 +5,7 @@ Receiver  -  inherits  the  Products  class  and  contains  info  specific  for 
 channels, color, size)
 """
 
+from typing import Dict, Any
 from json import JSONEncoder, JSONDecoder, loads
 
 from classes.product import Product
@@ -54,7 +55,7 @@ class Receiver(Product):
 
 class ReceiverEncoder(JSONEncoder):
         
-    def default(self, o :str) -> str:
+    def default(self, o :str) -> Dict[str, Any]:
         return o.__dict__
 
 class ReceiverDecoder(JSONDecoder):

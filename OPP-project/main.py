@@ -18,11 +18,8 @@ from classes.orders import Orders
 #---------------------------------------------
 # DEBUG
 #---------------------------------------------
-# import sys to use sys.argv 
-import sys
-from test import test_main
-
 import logging
+
 #---------------------------------------------
 # LOGGING - Setup
 #---------------------------------------------
@@ -48,7 +45,6 @@ def printNumberedMenu( list :list) -> None:
 
     for i, element in enumerate(list):
         print(f'\t{i}) {element.name}')
-
 
 def setProductForOrder(products :List[Product] ) -> Product:
     while True:
@@ -335,7 +331,4 @@ if __name__ == '__main__':
     for filename in filenames:
         createFile(filename)
 
-    if len(sys.argv) > 1 and sys.argv[1] == 'test':
-        test_main()
-    else:
-        main()
+    main()

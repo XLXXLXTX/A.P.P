@@ -5,6 +5,7 @@ Amplifier  -  inherits  the  Product  class  and  will  contain  info  specific 
 number of channels, size)
 """
 
+from typing import Dict, Any
 from json import JSONEncoder, JSONDecoder, loads
 
 from classes.product import Product
@@ -53,7 +54,7 @@ class Amplifier(Product):
 
 class AmplifierEncoder(JSONEncoder):
     
-    def default(self, o :str) -> str:
+    def default(self, o :str) -> Dict[str, Any]:
         return o.__dict__
     
 class AmplifierDecoder(JSONDecoder):

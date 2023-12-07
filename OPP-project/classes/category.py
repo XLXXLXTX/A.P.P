@@ -4,6 +4,8 @@
 Category - describes a single category
 """
 
+from typing import Dict, Any
+
 from json import JSONEncoder, JSONDecoder, loads
 
 #---------------------------------------------
@@ -43,13 +45,12 @@ class Category:
 
 class CategoryEncoder(JSONEncoder):
     # Transform the Python object into a json representation
-    def default(self, o :str) -> str:
+    def default(self, o: Any) -> Dict[str, Any]:
         return o.__dict__
-    pass
 
 class CategoryDecoder(JSONDecoder):
     # Transform the json representation into a Python object
-    def decode(self, o :str) -> str:
+    def decode(self, o: str) -> Category:
         data = loads(o)
         vals = []
         for key in data.keys():

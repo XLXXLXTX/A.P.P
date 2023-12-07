@@ -4,7 +4,7 @@
 Order - define an order as a list of products and quantities, and an address
 """
 
-from typing import List
+from typing import List, Dict, Any
 
 from json import JSONEncoder, JSONDecoder, loads
 
@@ -33,7 +33,6 @@ class Order:
         self.address = address
         self.products = products
         self.quantities = quantities
-
 
     def __eq__(self, other) -> bool:
         """ Overloaded in order to verify the membership inside a collection """
@@ -79,7 +78,7 @@ class Order:
 
 class OrderEncoder(JSONEncoder):
             
-    def default(self, o :str):
+    def default(self, o :str) -> Dict[str, Any]:
         return o.__dict__
 
 class OrderDecoder(JSONDecoder):

@@ -36,7 +36,6 @@ class Product(ABC):
                 self.name == other.name and 
                 self.price == other.price)
 
-
     def __hash__(self) -> int:
         return hash( (self._type, self.name, self.price) )
     
