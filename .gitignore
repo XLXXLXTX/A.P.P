@@ -1,0 +1,8 @@
+#Ignore the __pycache__ folder
+__pycache__/
+
+#Ignore the .idea dir
+.idea/ 
+
+#Ignore the categories.txt file
+categories.txt

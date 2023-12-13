@@ -1,2 +1,0 @@
-"{\"name\": \"Amplifiers\"}"
-"{\"name\": \"Receivers\"}"
