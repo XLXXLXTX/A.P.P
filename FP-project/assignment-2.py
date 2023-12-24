@@ -13,8 +13,8 @@ word exists in that dictionary, it means that the word is meaningful and display
 
 from itertools import permutations
 
-
 def create_anagrams(word: str) -> list:
+
     """ Creates all anagrams of the given word """
 
     # 'permutations()' returns a list of tuples with all the permutations of the given word
@@ -43,6 +43,8 @@ def compare_anagrams(anagrams: list, dict_path: str) -> list:
 
 
 def main():
+
+    # ask user for a word
     word = input("Enter a word: ")
 
     # create a list with all the posible anagrams of the given word

@@ -10,6 +10,7 @@ All these operations will be implemented using the functional programming style
 from typing import List
 
 def replace_char(char :chr) -> chr:
+
     """ Pure function - Replaces a character with another one """
 
     replacements = {'!':'s', '@':'h', '#':'e', '$':'r', '%':'l', '^':'o', '&':'c', '*':'k'}
@@ -28,17 +29,18 @@ def decode_text(text: str) -> str:
     #          in this case the string its the original text and 'replace_char()' is the function 
     #          that will be applied to each char
 
-    return ''.join(map(replace_char, text))
+    return ''.join( map(replace_char, text) )
 
 
 def find_words(text: str, letter: str) -> List[str]:
+
+    """ Finds all the words starting with the given letter """
     
     # split the text by spaces, into a list of words
     splitted_text = text.split()
 
-    
     # 'filter()'  is given an iterable collection, splitted_text (words from text)
-    #             and a function that will be applied to each element, 'startswith()'
+    #             and a function that will be applied to each element, 'startswith(letter)'
     #
     # lambda function is used to iterate over the list of words and check 
     #                 if the word starts with the given letter, as an anonymous function
