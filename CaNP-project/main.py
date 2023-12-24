@@ -1,7 +1,14 @@
 # Advanced Python Programming - CaN Project | Author: Javier Pardos | javier.pardos10@e-uvt.ro
 
 """
-    ...
+    Program that uses concurrent programming with threads to perform the following operations simultaneously:
+    - Downloading 3 files from the internet using download threads (DownloadThread).
+    - Decrypting the downloaded files using decryption threads (DecryptThread).
+    - Combining the decrypted files in the correct order.
+
+    This code demonstrates the use of concurrent programming in Python 
+    and how it can be used in task involving input/output operations and simultaneous data processing.
+
 """
 
 from threading import Thread, Lock
@@ -22,6 +29,9 @@ from collections import Counter
 # so each thread will have a lock to access this variable
 global_decrypted_data = {}
 
+#---------------------------------------------
+# CLASSES
+#---------------------------------------------
 class DownloadThread(Thread):
 
     """ 
@@ -32,10 +42,10 @@ class DownloadThread(Thread):
 
     def __init__(self, url, file_name):
         super().__init__()
-        # establish specific thread name
+        # define specific thread name
         DownloadThread.number_of_threads += 1
         self.name = 'DownloadThread-' + str(DownloadThread.number_of_threads)
-        # establish url and file name
+        # define url and file name
         self.url = url
         self.file_name = file_name
 
@@ -78,22 +88,19 @@ class DecryptThread(Thread):
     # count the number of threads
     number_of_threads = 0
 
-    # define alphabet globally that will be used by all threads
+    # define alphabet var globally as it will be used by all threads
     # as read only, so its not necessary to use a lock
     alphabet = 'abcdefghijklmnopqrstuvwxyz'
-
-    ### --- define a shared variable between threads ---
-    ##decrypted_data = {}
 
     # define a lock to be used when accesing the shared variable
     lock = Lock()
 
     def __init__(self, file_name, offset, decrypted_data):
         super().__init__()
-        # establish specific thread name
+        # define specific thread name
         DecryptThread.number_of_threads += 1
         self.name = 'DecryptThread-' + str(DecryptThread.number_of_threads)
-        # establish file name and offset
+        # define file name and offset
         self.file_name = file_name
         self.offset = offset
         self.decrypted_data = decrypted_data
@@ -127,18 +134,7 @@ class DecryptThread(Thread):
                 # using lock to make sure one thread is accessing the variable at a time
                 with DecryptThread.lock:
                     self.decrypted_data[file_name] = decrypted_content
-                    ##DecryptThread.decrypted_data[file_name] = decrypted_content
                     ##print(f'\t\t{self.name}: Decrypted data successfully save with offset {offset}')
-                
-
-                # write decrypted content back to the file
-                ##new_file = file_name.split('.')[0] + '_decrypted.txt'
-                ##with open(new_file, 'w') as f:  # Cambiado a modo binario ('wb')
-                ##    f.write(decrypted_content)
-                ##    print(f'\t\t{self.name}: File {new_file} decrypted successfully with offset {offset}')
-
-
-                ##print(f'File {file_name} decrypted successfully with offset {offset}')
         
         except Exception as e:
             print(f'\t\t{self.name}: ERROR: {e} while decrypting file {file_name} with offset {offset}')
@@ -179,9 +175,8 @@ class Combiner():
         self.correct_order = correct_order
 
     def mergeFiles(self, combined_filename):
-        
         """
-            Combines the decrypted files in the correct order.
+            Open and write the data into the file in the correct order.
         """
 
         with open(combined_filename, 'w') as f:
@@ -192,7 +187,9 @@ class Combiner():
 
         print(f'\n\tCombined text successfully saved to file {combined_filename}')
 
-
+#---------------------------------------------
+# FUNCTIONS TO LAUNCH THREADS
+#---------------------------------------------
 def launchDownloadThreads(fileUrls):
     
     """
@@ -241,11 +238,17 @@ def launchDecryptThreads(global_decrypted_data, filesToDecrypt, offset):
     for thread in threads:
         thread.start()
 
+    print()
+
     # wait for all threads to finish
     for thread in threads:
         thread.join()
 
+    print()
 
+#---------------------------------------------
+# MAIN
+#---------------------------------------------
 def main(): 
 
     # define file and urls 
@@ -262,23 +265,22 @@ def main():
     # launch and wait to finish for DownloadThreads
     launchDownloadThreads(fileUrls)
 
-    # launch and wait to finish for DecryptThreads
+    # generate list with files names to merge later
     filesToDecrypt = [filename[1] for filename in fileUrls.values()]
 
     # shuffle the files to decrypt, to make it more interesting
+    # this will make the threads to decrypt the files in a different order
+    # than the correct one, so the combiner will have to sort them
     if Counter(filesToDecrypt) ==  Counter(CORRECT_ORDER): random.shuffle(filesToDecrypt)
     
-    print(f'\nFiles to decrypt with shuffle: {filesToDecrypt}\n')
+    #print(f'\nFiles to decrypt with shuffle: {filesToDecrypt}\n')
 
+    # launch and wait to finish for DecryptThreads
     launchDecryptThreads(global_decrypted_data, filesToDecrypt, DECRYPTION_OFFSET)
-
-    ##print(f'\n\nDecrypted data: {global_decrypted_data}')
 
     # instantiate the combiner obj to merge the decrypted files in the correct order
     combiner = Combiner(global_decrypted_data, CORRECT_ORDER)
     combiner.mergeFiles(COMBINED_FILENAME)
 
-
 if __name__ == '__main__':
-    setupLogging()
     main()
