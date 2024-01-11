@@ -12,7 +12,10 @@
 """
 
 from threading import Thread, Lock
+# make sure to have installed requests module, with: pip install requests
 from requests import get
+
+from typing import List, Tuple, Dict
 
 #---------------------------------------------
 # TESTING
@@ -40,7 +43,7 @@ class DownloadThread(Thread):
 
     number_of_threads = 0
 
-    def __init__(self, url, file_name):
+    def __init__(self, url :str, file_name :str):
         super().__init__()
         # define specific thread name
         DownloadThread.number_of_threads += 1
@@ -58,7 +61,7 @@ class DownloadThread(Thread):
         print(f'\t\t{self.name} finished...')
         super().join()
 
-    def connectAndDownload(self, url, file_name):
+    def connectAndDownload(self, url :str, file_name :str) -> None:
         
         # connect to url and download file
         # save file to specified location
@@ -95,7 +98,7 @@ class DecryptThread(Thread):
     # define a lock to be used when accesing the shared variable
     lock = Lock()
 
-    def __init__(self, file_name, offset, decrypted_data):
+    def __init__(self, file_name :str, offset :int, decrypted_data :str):
         super().__init__()
         # define specific thread name
         DecryptThread.number_of_threads += 1
@@ -114,7 +117,7 @@ class DecryptThread(Thread):
         ##print(f'->Decrypted data from thread {self.name}: {self.decrypted_data}') ###{DecryptThread.decrypted_data}')
         super().join()
 
-    def decryptText(self, file_name, offset):
+    def decryptText(self, file_name :str, offset :int) -> None:
         
         """
             Opens the file, reads the content and call the decryptCaesar function
@@ -140,7 +143,7 @@ class DecryptThread(Thread):
             print(f'\t\t{self.name}: ERROR: {e} while decrypting file {file_name} with offset {offset}')
     
 
-    def decodeCaesarAlg(self, content, offset):
+    def decodeCaesarAlg(self, content :str, offset :int) -> str:
         
         """
             Decodes the given text using Caesar algorithm with the given offset.
@@ -174,7 +177,7 @@ class Combiner():
         self.decrypted_data = decrypted_data
         self.correct_order = correct_order
 
-    def mergeFiles(self, combined_filename):
+    def mergeFiles(self, combined_filename :str) -> None:
         """
             Open and write the data into the file in the correct order.
         """
@@ -190,7 +193,7 @@ class Combiner():
 #---------------------------------------------
 # FUNCTIONS TO LAUNCH THREADS
 #---------------------------------------------
-def launchDownloadThreads(fileUrls):
+def launchDownloadThreads(fileUrls :Dict[ str, Tuple[str, str] ]) -> None:
     
     """
         Launches a 'DowloadThread' thread for each file and waits to be downloaded.
@@ -217,7 +220,7 @@ def launchDownloadThreads(fileUrls):
     for thread in threads:
         thread.join()
 
-def launchDecryptThreads(global_decrypted_data, filesToDecrypt, offset):
+def launchDecryptThreads(global_decrypted_data :dict, filesToDecrypt :List[str], offset:int) -> None:
     
     """
         Launches a 'DecryptThread' thread for each file and waits to be decrypted.
@@ -276,7 +279,7 @@ def main():
     #print(f'\nFiles to decrypt with shuffle: {filesToDecrypt}\n')
 
     # launch and wait to finish for DecryptThreads
-    launchDecryptThreads(global_decrypted_data, filesToDecrypt, DECRYPTION_OFFSET)
+    launchDecryptThreads(global_decrypted_data, filesToDecrypt, DECRYPTION_OFFSET) 
 
     # instantiate the combiner obj to merge the decrypted files in the correct order
     combiner = Combiner(global_decrypted_data, CORRECT_ORDER)
